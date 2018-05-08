@@ -46,11 +46,6 @@ namespace SeeSharper.SyntaxColoring
 
             foreach (var span in thingy.GetClassifiedSpans())
             {
-                
-            }
-
-            foreach (var span in thingy.GetClassifiedSpans())
-            {
                 var symbol = thingy.GetSymbol(span);
                 switch (symbol)
                 {

@@ -9,8 +9,8 @@ using Microsoft.VisualStudio.Utilities;
 namespace SeeSharper.SyntaxColoring
 {
     [Export(typeof(IViewTaggerProvider))]
-    [ContentType("text")]
-    [TagType(typeof(TextMarkerTag))]
+    [ContentType("CSharp")]
+    [TagType(typeof(IClassificationTag))]
     public class SemanticColorTaggerProvider : IViewTaggerProvider
     {
         [Import]
@@ -18,7 +18,7 @@ namespace SeeSharper.SyntaxColoring
         [Import]
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
         [Import]
-        internal IClassificationTypeRegistryService ClassificationRegistry;
+        internal IClassificationTypeRegistryService ClassificationRegistry { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {

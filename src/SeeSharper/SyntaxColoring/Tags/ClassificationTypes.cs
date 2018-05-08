@@ -6,7 +6,8 @@ namespace SeeSharper.SyntaxColoring.Tags
 {
     public static class ClassificationTypes
     {
-        [Export(typeof(ClassificationTypeDefinition))] [Name(TagTypes.ExtensionMethd)]
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(TagTypes.ExtensionMethd)]
         public static ClassificationTypeDefinition ExtensionMethod;
     }
 }
