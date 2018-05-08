@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="SeeSharper.cf99141b-ae17-4fd8-9b00-a027f3e202ec" Version="1.0" Language="en-US" Publisher="Hans Olav" />
+        <Identity Id="SeeSharper.cf99141b-ae17-4fd8-9b00-a027f3e202ec" Version="0.1" Language="en-US" Publisher="Hans Olav" />
         <DisplayName>SeeSharper</DisplayName>
-        <Description>See Sharper.</Description>
+        <Description xml:space="preserve">See Sharper</Description>
+        <Icon>icon.png</Icon>
+        <PreviewImage>icon.png</PreviewImage>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0]" />

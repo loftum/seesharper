@@ -20,10 +20,8 @@ namespace SeeSharper.SyntaxColoring
         private readonly ITextBuffer _buffer;
         private readonly IClassificationTypeRegistryService _registry;
         private readonly ITextStructureNavigator _textStructureNavigator;
-
-        private readonly IClassificationType _extensionMethod;
         private readonly IDictionary<string, IClassificationType> _clasificationTypes = new Dictionary<string, IClassificationType>();
-
+        private Thingy _thingy;
 
         public SemanticColorTagger(ITextView textView, ITextBuffer buffer, IClassificationTypeRegistryService registry, ITextStructureNavigator textStructureNavigator)
         {
@@ -53,29 +51,40 @@ namespace SeeSharper.SyntaxColoring
             {
                 yield break;
             }
-
-            var thingy = Thingy.Get(_buffer, spans);
-            if (thingy == null)
+            if (_thingy == null || _thingy.Snapshot != spans[0].Snapshot)
+            {
+                _thingy = Thingy.Get(_buffer, spans[0].Snapshot);
+            }
+            if (_thingy == null)
             {
                 yield break;
             }
 
-            foreach (var span in thingy.GetClassifiedSpans())
+            foreach (var span in _thingy.GetClassifiedSpans(spans))
             {
-                var symbol = thingy.GetSymbol(span);
+                var symbol = _thingy.GetSymbol(span);
                 switch (symbol)
                 {
                     case IMethodSymbol method:
                         if (method.IsExtensionMethod)
                         {
-                            yield return span.TextSpan.ToTagSpan(thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethd]);
+                            yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethd]);
                         }
                         break;
                     case ITypeSymbol type:
                         if (type.TypeKind == TypeKind.Class && type.IsStatic)
                         {
-                            yield return span.TextSpan.ToTagSpan(thingy.Snapshot, _clasificationTypes[TagTypes.StaticClass]);
+                            yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.StaticClass]);
                         }
+                        break;
+                    case IFieldSymbol _:
+                        yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Field]);
+                        break;
+                    case IPropertySymbol _:
+                        yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Property]);
+                        break;
+                    case IEventSymbol _:
+                        yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Event]);
                         break;
                 }
             }

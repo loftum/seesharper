@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.CSharp;
@@ -10,27 +9,35 @@ using Microsoft.VisualStudio.Text;
 
 namespace SeeSharper.SyntaxColoring
 {
+    internal static class ValueExtensions
+    {
+        public static bool In<T>(this T value, params T[] values)
+        {
+            return values.Contains(value);
+        }
+    }
+
     internal class Thingy
     {
         public Workspace Workspace { get; private set; }
         public Document Document { get; private set; }
         public SemanticModel SemanticModel { get; private set; }
         public SyntaxNode SyntaxRoot { get; private set; }
-        public NormalizedSnapshotSpanCollection Spans { get; private set; }
         public ITextSnapshot Snapshot { get; private set; }
 
-        public IEnumerable<ClassifiedSpan> GetClassifiedSpans()
+        public IEnumerable<ClassifiedSpan> GetClassifiedSpans(NormalizedSnapshotSpanCollection spans)
         {
-            var comparer = StringComparer.InvariantCultureIgnoreCase;
-            var classifiedSpans =
-                Spans.SelectMany(s => {
-                    var textSpan = TextSpan.FromBounds(s.Start, s.End);
-                    return Classifier.GetClassifiedSpans(SemanticModel, textSpan, Workspace);
-                });
-
-            return from cs in classifiedSpans
-                where comparer.Compare(cs.ClassificationType, "identifier") == 0
-                select cs;
+            return spans
+                .Select(s => TextSpan.FromBounds(s.Start, s.End))
+                .SelectMany(s => Classifier.GetClassifiedSpans(SemanticModel, s, Workspace))
+                .Where(cs => cs.ClassificationType.In(
+                    ClassificationTypeNames.Identifier,
+                    ClassificationTypeNames.ClassName,
+                    ClassificationTypeNames.StructName,
+                    ClassificationTypeNames.EnumName,
+                    ClassificationTypeNames.DelegateName,
+                    ClassificationTypeNames.ExcludedCode)
+                );
         }
 
         public ISymbol GetSymbol(ClassifiedSpan span)
@@ -41,10 +48,10 @@ namespace SeeSharper.SyntaxColoring
 
         private Thingy() { }
 
-        public static Thingy Get(ITextBuffer buffer, NormalizedSnapshotSpanCollection spans)
+        public static Thingy Get(ITextBuffer buffer, ITextSnapshot snapshot)
         {
             var workspace = buffer.GetWorkspace();
-            var document = spans[0].Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+            var document = snapshot.GetOpenDocumentInCurrentContextWithChanges();
             if (document == null)
             {
                 return null;
@@ -65,8 +72,7 @@ namespace SeeSharper.SyntaxColoring
                 Document = document,
                 SemanticModel = semanticModel,
                 SyntaxRoot = syntaxRoot,
-                Spans = spans,
-                Snapshot = spans[0].Snapshot,
+                Snapshot = snapshot,
             };
         }
     }
