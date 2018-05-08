@@ -56,6 +56,7 @@
     <Compile Include="SyntaxColoring\Tags\TagTypes.cs" />
     <Compile Include="SyntaxColoring\TextSpanExtensions.cs" />
     <Compile Include="SyntaxColoring\Thingy.cs" />
+    <Compile Include="SyntaxColoring\ValueExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

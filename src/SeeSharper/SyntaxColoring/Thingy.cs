@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.CSharp;
@@ -9,11 +10,25 @@ using Microsoft.VisualStudio.Text;
 
 namespace SeeSharper.SyntaxColoring
 {
-    internal static class ValueExtensions
+    internal struct SpanMeta
     {
-        public static bool In<T>(this T value, params T[] values)
+        public SyntaxToken Token { get; }
+        public SyntaxNode Node { get; }
+        public ISymbol Symbol { get; }
+        public bool HasSymbol => Symbol != null;
+
+        public SpanMeta(SyntaxNode node, ISymbol symbol)
         {
-            return values.Contains(value);
+            Node = node;
+            Symbol = symbol;
+            Token = default(SyntaxToken);
+        }
+
+        public SpanMeta(SyntaxToken token)
+        {
+            Node = null;
+            Symbol = null;
+            Token = token;
         }
     }
 
@@ -29,26 +44,27 @@ namespace SeeSharper.SyntaxColoring
         {
             return spans
                 .Select(s => TextSpan.FromBounds(s.Start, s.End))
-                .SelectMany(s => Classifier.GetClassifiedSpans(SemanticModel, s, Workspace))
-                .Where(cs => cs.ClassificationType.In(
-                    ClassificationTypeNames.Identifier,
-                    ClassificationTypeNames.ClassName,
-                    ClassificationTypeNames.StructName,
-                    ClassificationTypeNames.EnumName,
-                    ClassificationTypeNames.DelegateName,
-                    ClassificationTypeNames.ExcludedCode)
-                );
+                .SelectMany(s => Classifier.GetClassifiedSpans(SemanticModel, s, Workspace));
+                
         }
 
-        public ISymbol GetSymbol(ClassifiedSpan span)
+        public SpanMeta GetMeta(TextSpan span)
         {
-            var node = SyntaxRoot.FindNode(span.TextSpan);
-            return SemanticModel.GetSymbolInfo(node).Symbol ?? SemanticModel.GetDeclaredSymbol(node);
+            var node = SyntaxRoot.FindNode(span)?.GetExpression();
+            if (node != null)
+            {
+                var symbol = SemanticModel.GetSymbolInfo(node).Symbol ??
+                    SemanticModel.GetDeclaredSymbol(node) ??
+                    SemanticModel.GetTypeInfo(node).Type;
+                return new SpanMeta(node, symbol);
+            }
+            var child = SyntaxRoot.ChildThatContainsPosition(span.Start);
+            return new SpanMeta(child.AsToken());
         }
 
         private Thingy() { }
 
-        public static Thingy Get(ITextBuffer buffer, ITextSnapshot snapshot)
+        public static async Task<Thingy> Get(ITextBuffer buffer, ITextSnapshot snapshot)
         {
             var workspace = buffer.GetWorkspace();
             var document = snapshot.GetOpenDocumentInCurrentContextWithChanges();
@@ -56,16 +72,9 @@ namespace SeeSharper.SyntaxColoring
             {
                 return null;
             }
+            var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
+            var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 
-            if (!document.TryGetSemanticModel(out var semanticModel))
-            {
-                return null;
-            }
-
-            if (!document.TryGetSyntaxRoot(out var syntaxRoot))
-            {
-                return null;
-            }
             return new Thingy
             {
                 Workspace = workspace,

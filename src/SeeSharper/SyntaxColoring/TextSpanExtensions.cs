@@ -7,13 +7,9 @@ namespace SeeSharper.SyntaxColoring
 {
     public static class TextSpanExtensions
     {
-        public static ITagSpan<IClassificationTag> ToTagSpan(this TextSpan span, ITextSnapshot snapshot,
-            IClassificationType classificationType)
+        public static ITagSpan<IClassificationTag> ToTagSpan(this TextSpan span, ITextSnapshot snapShot, IClassificationType classificationType)
         {
-            return new TagSpan<IClassificationTag>(
-                new SnapshotSpan(snapshot, span.Start, span.Length),
-                new ClassificationTag(classificationType)
-            );
+            return new TagSpan<IClassificationTag>(new SnapshotSpan(snapShot, span.Start, span.Length), new ClassificationTag(classificationType));
         }
     }
 }

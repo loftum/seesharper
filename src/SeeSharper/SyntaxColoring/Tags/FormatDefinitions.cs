@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition;
+using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
@@ -24,7 +25,7 @@ namespace SeeSharper.SyntaxColoring.Tags
     [ClassificationType(ClassificationTypeNames = TagTypes.StaticClass)]
     [Name(TagTypes.StaticClass)]
     [UserVisible(true)]
-    [Order(After = Priority.Default)]
+    [Order(After = Priority.High)]
     internal class StaticClassFormatDefinition : ClassificationFormatDefinition
     {
         public StaticClassFormatDefinition()
