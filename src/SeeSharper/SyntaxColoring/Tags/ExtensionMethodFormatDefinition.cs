@@ -19,4 +19,18 @@ namespace SeeSharper.SyntaxColoring.Tags
             IsBold = true;
         }
     }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = TagTypes.StaticClass)]
+    [Name(TagTypes.StaticClass)]
+    [UserVisible(true)]
+    [Order(After = Priority.Default)]
+    internal class StaticClassFormatDefinition : ClassificationFormatDefinition
+    {
+        public StaticClassFormatDefinition()
+        {
+            DisplayName = "SeeSharper Static class";
+            ForegroundColor = Colors.Magenta;
+        }
+    }
 }

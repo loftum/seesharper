@@ -5,28 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 
 namespace SeeSharper.SyntaxColoring
 {
-    internal static class SyntaxNodeExtensions
-    {
-        public static SyntaxNode GetExpression(this SyntaxNode node)
-        {
-            if (node.Kind() == SyntaxKind.Argument)
-            {
-                return ((ArgumentSyntax)node).Expression;
-            }
-            if (node.Kind() == SyntaxKind.AttributeArgument)
-            {
-                return ((AttributeArgumentSyntax)node).Expression;
-            }
-            return node;
-        }
-    }
-
     internal class Thingy
     {
         public Workspace Workspace { get; private set; }
