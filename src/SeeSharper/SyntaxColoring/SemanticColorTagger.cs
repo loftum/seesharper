@@ -4,8 +4,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using SeeSharper.SyntaxColoring.Tags;
 using System.Reflection;
@@ -27,16 +25,12 @@ namespace SeeSharper.SyntaxColoring
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private readonly ITextBuffer _buffer;
-        private readonly IClassificationTypeRegistryService _registry;
-        private readonly ITextStructureNavigator _textStructureNavigator;
         private readonly IDictionary<string, IClassificationType> _clasificationTypes = new Dictionary<string, IClassificationType>();
         private Thingy _thingy;
-        private readonly IList<ITagSpan<IClassificationTag>> _tags = new List<ITagSpan<IClassificationTag>>();
 
         public SemanticColorTagger(ITextBuffer buffer, IClassificationTypeRegistryService registry)
         {
             _buffer = buffer;
-            _registry = registry;
 
             foreach(string key in typeof(TagTypes).GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => f.FieldType == typeof(string)).Select(f => f.GetValue(null)))
             {
@@ -48,7 +42,7 @@ namespace SeeSharper.SyntaxColoring
         {
             if (spans.Count == 0)
             {
-                yield break;
+                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
             }
             if (_thingy == null || _thingy.Snapshot != spans[0].Snapshot)
             {
@@ -60,47 +54,52 @@ namespace SeeSharper.SyntaxColoring
                 }
                 catch
                 {
-                    yield break;
+                    return Enumerable.Empty<ITagSpan<IClassificationTag>>();
                 }
             }
             
             if (_thingy == null)
             {
-                yield break;
+                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
             }
+            return _thingy.GetClassifiedSpans(spans).Select(GetTagSpan).Where(s => s!= null);
+            
+        }
 
-            foreach (var span in _thingy.GetClassifiedSpans(spans))
+        private ITagSpan<IClassificationTag> GetTagSpan(ClassifiedSpan span)
+        {
+            var meta = _thingy.GetMeta(span.TextSpan);
+
+            if (meta.HasSymbol)
             {
-                var meta = _thingy.GetMeta(span.TextSpan);
-                if (meta.HasSymbol)
+                var symbol = meta.Symbol;
+                switch (symbol.Kind)
                 {
-                    var symbol = meta.Symbol;
-                    switch (symbol.Kind)
-                    {
-                        case SymbolKind.Method:
-                            if (symbol is IMethodSymbol method && method.IsExtensionMethod)
-                            {
-                                yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethd]);
-                            }
-                            break;
-                        case SymbolKind.NamedType:
-                            if (span.ClassificationType == ClassificationTypeNames.ClassName && symbol is INamedTypeSymbol type && type.TypeKind == TypeKind.Class && type.IsStatic)
-                            {
-                                yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.StaticClass]);
-                            }
-                            break;
-                        case SymbolKind.Field:
-                            yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Field]);
-                            break;
-                        case SymbolKind.Property:
-                            yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Property]);
-                            break;
-                        case SymbolKind.Event:
-                            yield return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Event]);
-                            break;
-                    }
+                    case SymbolKind.Method:
+                        if (symbol is IMethodSymbol method && method.IsExtensionMethod)
+                        {
+                            return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethd]);
+                        }
+                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Method]);
+                    case SymbolKind.NamedType:
+                        if (span.ClassificationType == ClassificationTypeNames.ClassName && symbol is INamedTypeSymbol type && type.TypeKind == TypeKind.Class && type.IsStatic)
+                        {
+                            return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.StaticClass]);
+                        }
+                        return null;
+                    case SymbolKind.Field:
+                        if (symbol is IFieldSymbol field && field.IsConst || symbol.ContainingType.TypeKind == TypeKind.Enum)
+                        {
+                            return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Constant]);
+                        }
+                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Field]);
+                    case SymbolKind.Property:
+                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Property]);
+                    case SymbolKind.Event:
+                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Event]);
                 }
             }
+            return null;
         }
     }
 }

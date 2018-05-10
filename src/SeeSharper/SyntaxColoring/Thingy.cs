@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 
@@ -30,6 +28,11 @@ namespace SeeSharper.SyntaxColoring
             Symbol = null;
             Token = token;
         }
+
+        public override string ToString()
+        {
+            return Node != null ? $"{Node.Span}: {Node}" : $"{Token.Span}: {Token}";
+        }
     }
 
     internal class Thingy
@@ -45,7 +48,6 @@ namespace SeeSharper.SyntaxColoring
             return spans
                 .Select(s => TextSpan.FromBounds(s.Start, s.End))
                 .SelectMany(s => Classifier.GetClassifiedSpans(SemanticModel, s, Workspace));
-                
         }
 
         public SpanMeta GetMeta(TextSpan span)
