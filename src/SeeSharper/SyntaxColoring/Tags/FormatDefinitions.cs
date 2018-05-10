@@ -6,29 +6,30 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace SeeSharper.SyntaxColoring.Tags
 {
-    [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = ClassificationTypeNames.Identifier)]
-    [Name(TagTypes.Identifier)]
-    [UserVisible(false)]
-    [Order(After = Priority.Default)]
-    internal class OverrideIdentifierFormatDefinition : ClassificationFormatDefinition
-    {
-        public OverrideIdentifierFormatDefinition()
-        {
-            DisplayName = "SeeSharper Identifier";
-            BackgroundColor = null;
-            ForegroundColor = null;
-            IsBold = null;
-            IsItalic = null;
-        }
-    }
+    //[Export(typeof(EditorFormatDefinition))]
+    //[ClassificationType(ClassificationTypeNames = ClassificationTypeNames.Identifier)]
+    //[Name(TagTypes.Identifier)]
+    //[UserVisible(false)]
+    //[Order(After = Priority.Default)]
+    //internal class OverrideIdentifierFormatDefinition : ClassificationFormatDefinition
+    //{
+    //    public OverrideIdentifierFormatDefinition()
+    //    {
+    //        DisplayName = "SeeSharper Identifier";
+    //        BackgroundColor = null;
+    //        ForegroundColor = null;
+    //        IsBold = null;
+    //        IsItalic = null;
+    //    }
+    //}
 
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = TagTypes.ExtensionMethd)]
     [BaseDefinition(ClassificationTypeNames.Identifier)]
     [Name(TagTypes.ExtensionMethd)]
     [UserVisible(true)]
-    [Order(After = Priority.Default)]
+    //[Order(After = Priority.Default)]
+    [Order(After = ClassificationTypeNames.Identifier)]
     internal class ExtensionMethodFormatDefinition : ClassificationFormatDefinition
     {
         public ExtensionMethodFormatDefinition()
@@ -43,7 +44,7 @@ namespace SeeSharper.SyntaxColoring.Tags
     [ClassificationType(ClassificationTypeNames = TagTypes.Method)]
     [Name(TagTypes.Method)]
     [UserVisible(true)]
-    [Order(After = Priority.Default)]
+    [Order(After = ClassificationTypeNames.Identifier)]
     internal class MethodFormatDefinition : ClassificationFormatDefinition
     {
         public MethodFormatDefinition()
@@ -59,7 +60,7 @@ namespace SeeSharper.SyntaxColoring.Tags
     [ClassificationType(ClassificationTypeNames = ClassificationTypeNames.ClassName)]
     [Name(TagTypes.StaticClass)]
     [UserVisible(true)]
-    [Order(After = Priority.Default)]
+    [Order(After = ClassificationTypeNames.ClassName)]
     internal class StaticClassFormatDefinition : ClassificationFormatDefinition
     {
         public StaticClassFormatDefinition()
