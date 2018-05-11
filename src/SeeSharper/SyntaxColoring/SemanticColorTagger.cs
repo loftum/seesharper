@@ -9,6 +9,7 @@ using SeeSharper.SyntaxColoring.Tags;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Classification;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace SeeSharper.SyntaxColoring
 {
@@ -69,6 +70,7 @@ namespace SeeSharper.SyntaxColoring
         private ITagSpan<IClassificationTag> GetTagSpan(ClassifiedSpan span)
         {
             var meta = _thingy.GetMeta(span.TextSpan);
+            var s = meta.ToString();
 
             if (meta.HasSymbol)
             {
@@ -76,7 +78,7 @@ namespace SeeSharper.SyntaxColoring
                 switch (symbol.Kind)
                 {
                     case SymbolKind.Method:
-                        if (symbol is IMethodSymbol method && method.IsExtensionMethod)
+                        if (span.ClassificationType == "extension method name" && symbol is IMethodSymbol method && method.IsExtensionMethod)
                         {
                             return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethd]);
                         }

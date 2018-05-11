@@ -6,29 +6,10 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace SeeSharper.SyntaxColoring.Tags
 {
-    //[Export(typeof(EditorFormatDefinition))]
-    //[ClassificationType(ClassificationTypeNames = ClassificationTypeNames.Identifier)]
-    //[Name(TagTypes.Identifier)]
-    //[UserVisible(false)]
-    //[Order(After = Priority.Default)]
-    //internal class OverrideIdentifierFormatDefinition : ClassificationFormatDefinition
-    //{
-    //    public OverrideIdentifierFormatDefinition()
-    //    {
-    //        DisplayName = "SeeSharper Identifier";
-    //        BackgroundColor = null;
-    //        ForegroundColor = null;
-    //        IsBold = null;
-    //        IsItalic = null;
-    //    }
-    //}
-
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = TagTypes.ExtensionMethd)]
-    [BaseDefinition(ClassificationTypeNames.Identifier)]
     [Name(TagTypes.ExtensionMethd)]
     [UserVisible(true)]
-    //[Order(After = Priority.Default)]
     [Order(After = ClassificationTypeNames.Identifier)]
     internal class ExtensionMethodFormatDefinition : ClassificationFormatDefinition
     {
@@ -50,14 +31,12 @@ namespace SeeSharper.SyntaxColoring.Tags
         public MethodFormatDefinition()
         {
             DisplayName = "SeeSharper Extension method";
-            //ForegroundColor = Color.FromRgb(220, 220, 220);
             IsBold = false;
         }
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    //[ClassificationType(ClassificationTypeNames = TagTypes.StaticClass)]
-    [ClassificationType(ClassificationTypeNames = ClassificationTypeNames.ClassName)]
+    [ClassificationType(ClassificationTypeNames = TagTypes.StaticClass)]
     [Name(TagTypes.StaticClass)]
     [UserVisible(true)]
     [Order(After = ClassificationTypeNames.ClassName)]
