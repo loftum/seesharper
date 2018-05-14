@@ -17,7 +17,6 @@ namespace SeeSharper.OccurrenceColoring
         [Import]
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
 
-
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
             if (textView.TextBuffer != buffer)
