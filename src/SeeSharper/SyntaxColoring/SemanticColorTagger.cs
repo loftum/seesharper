@@ -37,6 +37,10 @@ namespace SeeSharper.SyntaxColoring
             {
                 _clasificationTypes[key] = registry.GetClassificationType(key);
             }
+            _clasificationTypes[ClassificationTypeNames.ClassName] = registry.GetClassificationType(ClassificationTypeNames.ClassName);
+            _clasificationTypes[ClassificationTypeNames.EnumName] = registry.GetClassificationType(ClassificationTypeNames.EnumName);
+            _clasificationTypes[ClassificationTypeNames.StructName] = registry.GetClassificationType(ClassificationTypeNames.StructName);
+            _clasificationTypes[ClassificationTypeNames.InterfaceName] = registry.GetClassificationType(ClassificationTypeNames.InterfaceName);
         }
 
         public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -78,11 +82,33 @@ namespace SeeSharper.SyntaxColoring
                 switch (symbol.Kind)
                 {
                     case SymbolKind.Method:
-                        if (span.ClassificationType == "extension method name" && symbol is IMethodSymbol method && method.IsExtensionMethod)
+                        if (symbol is IMethodSymbol method)
                         {
-                            return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethd]);
+                            if (method.IsExtensionMethod && span.ClassificationType == "extension method name")
+                            {
+                                return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethd]);
+                            }
+                            if (method.MethodKind == MethodKind.Constructor && span.ClassificationType == "identifier")
+                            {
+                                switch (method.ContainingType?.TypeKind)
+                                {
+                                    case TypeKind.Class when method.ContainingType.IsStatic:
+                                    {
+                                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.StaticClass]);
+                                    }
+                                    case TypeKind.Class:
+                                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[ClassificationTypeNames.ClassName]);
+                                    case TypeKind.Enum:
+                                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[ClassificationTypeNames.EnumName]);
+                                    case TypeKind.Struct:
+                                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[ClassificationTypeNames.StructName]);
+                                    default:
+                                        return null;
+                                }
+                            }
+                            return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Method]);
                         }
-                        return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.Method]);
+                        return null;
                     case SymbolKind.NamedType:
                         if (span.ClassificationType == ClassificationTypeNames.ClassName && symbol is INamedTypeSymbol type && type.TypeKind == TypeKind.Class && type.IsStatic)
                         {
