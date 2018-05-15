@@ -8,7 +8,8 @@
         public const string Field = "SeeSharper/Field";
         public const string Event = "SeeSharper/Event";
         public const string Constant = "SeeSharper/Constant";
-        public const string Identifier = "SeeSharper/Identifier";
         public const string Method = "SeeSharper/Method";
+        public const string Dim = "SeeSharper/Dim";
+        public const string Highlight = "SeeSharper/Highlight";
     }
 }
