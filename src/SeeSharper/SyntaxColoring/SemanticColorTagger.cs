@@ -7,20 +7,10 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using SeeSharper.SyntaxColoring.Tags;
 using System.Reflection;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Classification;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace SeeSharper.SyntaxColoring
 {
-    public static class SnapshotSpanExtensions
-    {
-        public static TextSpan GetTextSpan(this SnapshotSpan span)
-        {
-            return TextSpan.FromBounds(span.Start, span.End);
-        }
-    }
-
     public class SemanticColorTagger : ITagger<IClassificationTag>
     {
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;

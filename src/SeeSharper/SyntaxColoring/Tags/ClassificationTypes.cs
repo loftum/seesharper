@@ -37,5 +37,13 @@ namespace SeeSharper.SyntaxColoring.Tags
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(TagTypes.Event)]
         public static ClassificationTypeDefinition Event;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(TagTypes.Dim)]
+        public static ClassificationTypeDefinition Dim;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(TagTypes.Highlight)]
+        public static ClassificationTypeDefinition Highlight;
     }
 }

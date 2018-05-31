@@ -3,6 +3,7 @@ using System.Windows.Media;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+using SeeSharper.OccurrenceColoring;
 
 namespace SeeSharper.SyntaxColoring.Tags
 {
@@ -102,6 +103,34 @@ namespace SeeSharper.SyntaxColoring.Tags
         {
             DisplayName = "SeeSharper Event";
             ForegroundColor = Colors.Magenta;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = TagTypes.Dim)]
+    [Name(TagTypes.Dim)]
+    [UserVisible(true)]
+    [Order(After = Priority.Default)]
+    internal class DimFormatDefinition : ClassificationFormatDefinition
+    {
+        public DimFormatDefinition()
+        {
+            DisplayName = "SeeSharper Dim";
+            ForegroundColor = Colors.DimGray.WithAlpha(100);
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = TagTypes.Highlight)]
+    [Name(TagTypes.Highlight)]
+    [UserVisible(true)]
+    [Order(After = Priority.Default)]
+    internal class HighlightFormatDefinition : ClassificationFormatDefinition
+    {
+        public HighlightFormatDefinition()
+        {
+            DisplayName = "SeeSharper Highlight";
+            BackgroundColor = Colors.Yellow.WithAlpha(100);
         }
     }
 }

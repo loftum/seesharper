@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -9,13 +10,15 @@ namespace SeeSharper.OccurrenceColoring
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("text")]
-    [TagType(typeof(TextMarkerTag))]
+    [TagType(typeof(IClassificationTag))]
     internal class OccurrenceTaggerProvider : IViewTaggerProvider
     {
         [Import]
         internal ITextSearchService TextSearchService { get; set; }
         [Import]
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
+        [Import]
+        internal IClassificationTypeRegistryService ClassificationRegistry { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
@@ -24,7 +27,7 @@ namespace SeeSharper.OccurrenceColoring
                 return null;
             }
             var textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
-            return new OccurrenceTagger(textView, buffer, TextSearchService, textStructureNavigator) as ITagger<T>;
+            return new OccurrenceTagger(textView, buffer, TextSearchService, textStructureNavigator, ClassificationRegistry) as ITagger<T>;
         }
     }
 }

@@ -55,7 +55,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Debugging\FileDebug.cs" />
-    <Compile Include="OccurrenceColoring\OccurrenceTag.cs" />
+    <Compile Include="OccurrenceColoring\ColorExtensions.cs" />
     <Compile Include="OccurrenceColoring\OccurrenceTagger.cs" />
     <Compile Include="OccurrenceColoring\OccurrenceTaggerProvider.cs" />
     <Compile Include="Options\OptionsPackage.cs" />
