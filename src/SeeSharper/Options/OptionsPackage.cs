@@ -28,7 +28,7 @@ namespace SeeSharper.Options
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    [ProvideOptionPage(typeof(OccurrenceOptionsPage), OccurrenceOptionsPage.Category, OccurrenceOptionsPage.PageName, 0, 0, true)]
+    [ProvideOptionPage(typeof(OccurrenceTaggingOptionsPage), OccurrenceTaggingOptionsPage.Category, OccurrenceTaggingOptionsPage.PageName, 0, 0, true)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class OptionsPackage : AsyncPackage
     {
@@ -42,6 +42,7 @@ namespace SeeSharper.Options
         /// </summary>
         public OptionsPackage()
         {
+            var page = (OccurrenceTaggingOptionsPage) GetDialogPage(typeof(OccurrenceTaggingOptionsPage));
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other

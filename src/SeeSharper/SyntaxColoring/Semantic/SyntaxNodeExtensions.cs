@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SeeSharper.SyntaxColoring
+namespace SeeSharper.SyntaxColoring.Semantic
 {
     internal static class SyntaxNodeExtensions
     {

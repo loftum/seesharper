@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace SeeSharper.SyntaxColoring
+namespace SeeSharper.SyntaxColoring.Semantic
 {
     internal static class ValueExtensions
     {

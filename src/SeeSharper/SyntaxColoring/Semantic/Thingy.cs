@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 
-namespace SeeSharper.SyntaxColoring
+namespace SeeSharper.SyntaxColoring.Semantic
 {
     internal struct SpanMeta
     {

@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace SeeSharper.SyntaxColoring
+namespace SeeSharper.SyntaxColoring.Semantic
 {
     public static class TextSpanExtensions
     {

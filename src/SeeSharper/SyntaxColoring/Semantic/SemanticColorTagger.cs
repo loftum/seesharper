@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using SeeSharper.SyntaxColoring.Tags;
-using System.Reflection;
-using Microsoft.CodeAnalysis.Classification;
 
-namespace SeeSharper.SyntaxColoring
+namespace SeeSharper.SyntaxColoring.Semantic
 {
     public class SemanticColorTagger : ITagger<IClassificationTag>
     {

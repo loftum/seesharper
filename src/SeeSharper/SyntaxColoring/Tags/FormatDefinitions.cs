@@ -3,7 +3,7 @@ using System.Windows.Media;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-using SeeSharper.OccurrenceColoring;
+using SeeSharper.SyntaxColoring.OccurrenceTagging;
 
 namespace SeeSharper.SyntaxColoring.Tags
 {
@@ -110,7 +110,7 @@ namespace SeeSharper.SyntaxColoring.Tags
     [ClassificationType(ClassificationTypeNames = TagTypes.Dim)]
     [Name(TagTypes.Dim)]
     [UserVisible(true)]
-    [Order(After = Priority.Default)]
+    [Order(After = Priority.High)]
     internal class DimFormatDefinition : ClassificationFormatDefinition
     {
         public DimFormatDefinition()
@@ -124,7 +124,7 @@ namespace SeeSharper.SyntaxColoring.Tags
     [ClassificationType(ClassificationTypeNames = TagTypes.Highlight)]
     [Name(TagTypes.Highlight)]
     [UserVisible(true)]
-    [Order(After = Priority.Default)]
+    [Order(After = Priority.High)]
     internal class HighlightFormatDefinition : ClassificationFormatDefinition
     {
         public HighlightFormatDefinition()

@@ -24,6 +24,13 @@ namespace TestSolution
 
         public Program()
         {
+            Hest123();
+            Hest123(); // sdaløkj
+        }
+
+        static void Hest123()
+        {
+
         }
 
         static void Main(string[] args)

@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Settings;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -6,7 +9,7 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
-namespace SeeSharper.OccurrenceColoring
+namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("text")]
@@ -19,6 +22,8 @@ namespace SeeSharper.OccurrenceColoring
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
         [Import]
         internal IClassificationTypeRegistryService ClassificationRegistry { get; set; }
+        [Import]
+        internal SVsServiceProvider ServiceProvider { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
@@ -27,7 +32,22 @@ namespace SeeSharper.OccurrenceColoring
                 return null;
             }
             var textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
-            return new OccurrenceTagger(textView, buffer, TextSearchService, textStructureNavigator, ClassificationRegistry) as ITagger<T>;
+            var settingsStore = ServiceProvider.GetWritableSettingsStore();
+            return (ITagger<T>) new OccurrenceTagger(textView,
+                buffer,
+                TextSearchService,
+                textStructureNavigator,
+                ClassificationRegistry,
+                settingsStore);
+        }
+    }
+
+    public static class SVsServiceProviderExtensions
+    {
+        public static WritableSettingsStore GetWritableSettingsStore(this SVsServiceProvider serviceProvider)
+        {
+            var manager = new ShellSettingsManager(serviceProvider);
+            return manager.GetWritableSettingsStore(SettingsScope.UserSettings);
         }
     }
 }

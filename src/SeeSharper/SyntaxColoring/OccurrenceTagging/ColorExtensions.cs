@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace SeeSharper.OccurrenceColoring
+namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 {
     public static class ColorExtensions
     {
