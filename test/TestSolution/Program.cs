@@ -25,7 +25,15 @@ namespace TestSolution
         public Program()
         {
             Hest123();
+            
+            NotHest();
+
+
             Hest123(); // sdaløkj
+        }
+
+        static void NotHest()
+        {
         }
 
         static void Hest123()

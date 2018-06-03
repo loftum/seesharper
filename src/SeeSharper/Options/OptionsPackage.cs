@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -42,7 +43,6 @@ namespace SeeSharper.Options
         /// </summary>
         public OptionsPackage()
         {
-            var page = (OccurrenceTaggingOptionsPage) GetDialogPage(typeof(OccurrenceTaggingOptionsPage));
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other

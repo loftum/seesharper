@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using SeeSharper.Options;
 
 namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 {
@@ -23,7 +24,7 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
         [Import]
         internal IClassificationTypeRegistryService ClassificationRegistry { get; set; }
         [Import]
-        internal SVsServiceProvider ServiceProvider { get; set; }
+        internal IOccurrenceTaggingOptions Options { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
@@ -32,13 +33,13 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
                 return null;
             }
             var textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
-            var settingsStore = ServiceProvider.GetWritableSettingsStore();
+            
             return (ITagger<T>) new OccurrenceTagger(textView,
                 buffer,
                 TextSearchService,
                 textStructureNavigator,
                 ClassificationRegistry,
-                settingsStore);
+                Options);
         }
     }
 

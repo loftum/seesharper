@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -23,38 +23,46 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
         private NormalizedSnapshotSpanCollection _wordSpans;
         private readonly IDictionary<string, IClassificationType> _classificationTypes = new Dictionary<string, IClassificationType>();
         
-        private readonly WritableSettingsStore _settingsStore;
+        private readonly IOccurrenceTaggingOptions _options;
         private readonly object _updateLock = new object();
-
-        private readonly string[] _highlightPatterns;
-        private readonly string[] _dimPatterns;
 
         public OccurrenceTagger(ITextView view,
             ITextBuffer sourceBuffer,
             ITextSearchService textSearchService,
             ITextStructureNavigator textStructureNavigator,
             IClassificationTypeRegistryService registry,
-            WritableSettingsStore settingsStore)
+            IOccurrenceTaggingOptions options)
         {
             _view = view;
             _sourceBuffer = sourceBuffer;
             _textSearchService = textSearchService;
             _textStructureNavigator = textStructureNavigator;
-            _settingsStore = settingsStore;
+            _options = options;
             _wordSpans = new NormalizedSnapshotSpanCollection();
             _classificationTypes[TagTypes.Dim] = registry.GetClassificationType(TagTypes.Dim);
             _classificationTypes[TagTypes.Highlight] = registry.GetClassificationType(TagTypes.Highlight);
             view.LayoutChanged += LayoutChanged;
-            view.Caret.PositionChanged += (o, e) =>
-            {
-                TagsChanged?.Invoke(this,
-                    new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0,
-                        _sourceBuffer.CurrentSnapshot.Length)));
-            };
+            view.Caret.PositionChanged += OnPositionChanged;
+            _options.PropertyChanged += OnOptionsChanged;
             Update(_sourceBuffer.CurrentSnapshot);
+        }
 
-            _highlightPatterns = _settingsStore.GetString(typeof(OccurrenceTaggingOptionsPage).FullName, "HighlightPatterns", "").Split(new []{Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
-            _dimPatterns = _settingsStore.GetString("Tagging", "DimPatterns", "").Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        ~OccurrenceTagger()
+        {
+            _view.Caret.PositionChanged -= OnPositionChanged;
+            _options.PropertyChanged -= OnOptionsChanged;
+        }
+
+        private void OnOptionsChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Update(_sourceBuffer.CurrentSnapshot);
+        }
+
+        private void OnPositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            TagsChanged?.Invoke(this,
+                new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0,
+                    _sourceBuffer.CurrentSnapshot.Length)));
         }
 
         private void LayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
@@ -68,11 +76,10 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 
         private void Update(ITextSnapshot snapshot)
         {
+            var findDatas = _options.DimPatterns.Select(p => new FindData(p, snapshot, FindOptions.UseRegularExpressions, _textStructureNavigator));
+            var results = findDatas.SelectMany(d => _textSearchService.FindAll(d));
             
-            var data = new FindData("^.*Hest\\d{3}.*$", snapshot, FindOptions.UseRegularExpressions, _textStructureNavigator);
-            var result = _textSearchService.FindAll(data);
-            
-            var newSpans = new NormalizedSnapshotSpanCollection(result);
+            var newSpans = new NormalizedSnapshotSpanCollection(results);
             lock (_updateLock)
             {
                 _wordSpans = newSpans;
@@ -80,7 +87,6 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
                 temp?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0, _sourceBuffer.CurrentSnapshot.Length)));
             }
         }
-
 
         public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
