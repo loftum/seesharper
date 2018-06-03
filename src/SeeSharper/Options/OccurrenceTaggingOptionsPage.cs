@@ -1,37 +1,47 @@
 ﻿using System.ComponentModel;
+using System.Windows;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 
 namespace SeeSharper.Options
 {
-    public class OccurrenceTaggingOptionsPage : DialogPage
+    public class OccurrenceTaggingOptionsPage : UIElementDialogPage
     {
         private IOccurrenceTaggingOptions _options;
         private IOccurrenceTaggingOptions Options => _options ??
             (_options = Site.GetService<IComponentModel>(typeof(SComponentModel)).DefaultExportProvider.GetExportedValue<IOccurrenceTaggingOptions>());
 
-        private static int _nextId = 0;
-        private readonly int _id = ++_nextId;
-
         public const string Category = "SeeSharper";
         public const string PageName = "Tagging";
 
-        [Category(Category)]
-        [DisplayName("Dim pattern")]
-        [Description("Dim pattern")]
-        public string DimPatternsString
+        //[Category(Category)]
+        //[DisplayName("Dim pattern")]
+        //[Description("Dim pattern")]
+        //public string DimPatternsString
+        //{
+        //    get => Options?.DimPatternsString;
+        //    set => Options.DimPatternsString = value;
+        //}
+
+        //[Category(Category)]
+        //[DisplayName("Highlight pattern")]
+        //[Description("Highlight pattern")]
+        //public string HighlightPatternsString
+        //{
+        //    get => Options?.HighlightPatternsString;
+        //    set => Options.HighlightPatternsString = value;
+        //}
+
+        protected override void OnActivate(CancelEventArgs e)
         {
-            get => Options?.DimPatternsString;
-            set => Options.DimPatternsString = value;
+            LoadSettingsFromStorage();
+            base.OnActivate(e);
         }
 
-        [Category(Category)]
-        [DisplayName("Highlight pattern")]
-        [Description("Highlight pattern")]
-        public string HighlightPatternsString
+        protected override void OnApply(PageApplyEventArgs e)
         {
-            get => Options?.HighlightPatternsString;
-            set => Options.HighlightPatternsString = value;
+            base.OnApply(e);
+            SaveSettingsToStorage();
         }
 
         public override void LoadSettingsFromStorage()
@@ -43,5 +53,21 @@ namespace SeeSharper.Options
         {
             Options.Save();
         }
+
+        private OptionsControl _control;
+        private OptionsControl Control
+        {
+            get
+            {
+                if (_control == null)
+                {
+                    _control = new OptionsControl();
+                    _control.DataContext = Options;
+                }
+                return _control;
+            }
+        }
+
+        protected override UIElement Child => Control;
     }
 }

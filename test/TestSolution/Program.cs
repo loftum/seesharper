@@ -32,6 +32,11 @@ namespace TestSolution
             Hest123(); // sdaløkj
         }
 
+        static void Pølse()
+        {
+
+        }
+
         static void NotHest()
         {
         }
