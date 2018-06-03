@@ -20,7 +20,8 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITextSearchService _textSearchService;
         private readonly ITextStructureNavigator _textStructureNavigator;
-        private NormalizedSnapshotSpanCollection _wordSpans;
+        private NormalizedSnapshotSpanCollection _dimSpans;
+        private NormalizedSnapshotSpanCollection _highlightSpans;
         private readonly IDictionary<string, IClassificationType> _classificationTypes = new Dictionary<string, IClassificationType>();
         
         private readonly IOccurrenceTaggingOptions _options;
@@ -38,7 +39,8 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
             _textSearchService = textSearchService;
             _textStructureNavigator = textStructureNavigator;
             _options = options;
-            _wordSpans = new NormalizedSnapshotSpanCollection();
+            _dimSpans = new NormalizedSnapshotSpanCollection();
+            _highlightSpans = new NormalizedSnapshotSpanCollection();
             _classificationTypes[TagTypes.Dim] = registry.GetClassificationType(TagTypes.Dim);
             _classificationTypes[TagTypes.Highlight] = registry.GetClassificationType(TagTypes.Highlight);
             view.LayoutChanged += LayoutChanged;
@@ -76,40 +78,49 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 
         private void Update(ITextSnapshot snapshot)
         {
-            var findDatas = _options.DimPatterns.Select(p => new FindData(p, snapshot, FindOptions.UseRegularExpressions, _textStructureNavigator));
-            var results = findDatas.SelectMany(d => _textSearchService.FindAll(d));
-            
-            var newSpans = new NormalizedSnapshotSpanCollection(results);
+            var dimSpans = Find(_options.DimPatterns, snapshot);
+            var highlightSpans = Find(_options.HighlightPatterns, snapshot);
             lock (_updateLock)
             {
-                _wordSpans = newSpans;
+                _dimSpans = dimSpans;
+                _highlightSpans = highlightSpans;
                 var temp = TagsChanged;
                 temp?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0, _sourceBuffer.CurrentSnapshot.Length)));
             }
         }
 
+        private NormalizedSnapshotSpanCollection Find(IEnumerable<string> patterns, ITextSnapshot snapshot)
+        {
+            var findDatas = patterns.Select(p => new FindData(p, snapshot, FindOptions.UseRegularExpressions, _textStructureNavigator));
+            var results = findDatas.SelectMany(d => _textSearchService.FindAll(d));
+            var spans = new NormalizedSnapshotSpanCollection(results);
+            return spans;
+        }
+
         public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (_wordSpans == null)
+            return GetTags(spans, _dimSpans, TagTypes.Dim).Concat(GetTags(spans, _highlightSpans, TagTypes.Highlight));
+        }
+
+        private IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans, NormalizedSnapshotSpanCollection wordSpans, string classificationType)
+        {
+            if (wordSpans == null)
             {
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
             }
 
-            if (spans.Count == 0 || _wordSpans.Count == 0)
+            if (spans.Count == 0 || wordSpans.Count == 0)
             {
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
             }
-
-            var wordSpans = _wordSpans;
             if (spans[0].Snapshot != wordSpans[0].Snapshot)
             {
                 wordSpans = new NormalizedSnapshotSpanCollection(wordSpans.Select(s => s.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeInclusive)));
             }
-
             var caretPoint = _view.Caret.Position.Point.GetPoint(_sourceBuffer, _view.Caret.Position.Affinity);
             var ret = NormalizedSnapshotSpanCollection.Overlap(spans, wordSpans)
                 .Where(s => !caretPoint.HasValue || caretPoint.Value < s.Start || s.End < caretPoint.Value)
-                .Select(s => new TagSpan<IClassificationTag>(s, new ClassificationTag(_classificationTypes[TagTypes.Dim])));
+                .Select(s => new TagSpan<IClassificationTag>(s, new ClassificationTag(_classificationTypes[classificationType])));
             return ret;
         }
     }

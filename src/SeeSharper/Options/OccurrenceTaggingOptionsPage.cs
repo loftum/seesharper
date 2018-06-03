@@ -14,33 +14,19 @@ namespace SeeSharper.Options
         public const string Category = "SeeSharper";
         public const string PageName = "Tagging";
 
-        //[Category(Category)]
-        //[DisplayName("Dim pattern")]
-        //[Description("Dim pattern")]
-        //public string DimPatternsString
-        //{
-        //    get => Options?.DimPatternsString;
-        //    set => Options.DimPatternsString = value;
-        //}
-
-        //[Category(Category)]
-        //[DisplayName("Highlight pattern")]
-        //[Description("Highlight pattern")]
-        //public string HighlightPatternsString
-        //{
-        //    get => Options?.HighlightPatternsString;
-        //    set => Options.HighlightPatternsString = value;
-        //}
-
         protected override void OnActivate(CancelEventArgs e)
         {
             LoadSettingsFromStorage();
+            Control.DimPatterns.Text = Options.DimPatternsString;
+            Control.HighlightPatterns.Text = Options.HighlightPatternsString;
             base.OnActivate(e);
         }
 
         protected override void OnApply(PageApplyEventArgs e)
         {
             base.OnApply(e);
+            Options.DimPatternsString = Control.DimPatterns.Text;
+            Options.HighlightPatternsString = Control.HighlightPatterns.Text;
             SaveSettingsToStorage();
         }
 
@@ -55,18 +41,7 @@ namespace SeeSharper.Options
         }
 
         private OptionsControl _control;
-        private OptionsControl Control
-        {
-            get
-            {
-                if (_control == null)
-                {
-                    _control = new OptionsControl();
-                    _control.DataContext = Options;
-                }
-                return _control;
-            }
-        }
+        private OptionsControl Control => _control ?? (_control = new OptionsControl());
 
         protected override UIElement Child => Control;
     }
