@@ -55,6 +55,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Debugging\FileDebug.cs" />
+    <Compile Include="Options\IOccurrenceTaggingOptions.cs" />
+    <Compile Include="Options\OccurrenceTaggingOptions.cs" />
+    <Compile Include="Options\ServiceProviderExtensions.cs" />
+    <Compile Include="Options\SettingsStoreExtensions.cs" />
     <Compile Include="SyntaxColoring\OccurrenceTagging\ColorExtensions.cs" />
     <Compile Include="SyntaxColoring\OccurrenceTagging\OccurrenceTagger.cs" />
     <Compile Include="SyntaxColoring\OccurrenceTagging\OccurrenceTaggerProvider.cs" />
