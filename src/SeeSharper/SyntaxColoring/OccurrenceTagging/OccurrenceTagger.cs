@@ -91,7 +91,7 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 
         private NormalizedSnapshotSpanCollection Find(IEnumerable<string> patterns, ITextSnapshot snapshot)
         {
-            var findDatas = patterns.Select(p => new FindData(p, snapshot, FindOptions.UseRegularExpressions, _textStructureNavigator));
+            var findDatas = patterns.Select(p => new FindData(p, snapshot, FindOptions.UseRegularExpressions | FindOptions.Multiline, _textStructureNavigator));
             var results = findDatas.SelectMany(d => _textSearchService.FindAll(d));
             var spans = new NormalizedSnapshotSpanCollection(results);
             return spans;

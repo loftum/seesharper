@@ -26,13 +26,13 @@ namespace TestSolution
         {
             5.GetString();
 
-
+            
             Hest123();
             
             NotHest();
 
 
-            Hest123(); // sdaløkj
+            Hest123(); // p
         }
         
         static void Pølse()
