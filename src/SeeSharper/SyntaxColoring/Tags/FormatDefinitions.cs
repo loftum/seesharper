@@ -17,7 +17,6 @@ namespace SeeSharper.SyntaxColoring.Tags
         public ExtensionMethodFormatDefinition()
         {
             DisplayName = "SeeSharper Extension method";
-            ForegroundColor = Color.FromRgb(220, 220, 220);
             IsBold = true;
         }
     }
@@ -31,7 +30,7 @@ namespace SeeSharper.SyntaxColoring.Tags
     {
         public MethodFormatDefinition()
         {
-            DisplayName = "SeeSharper Extension method";
+            DisplayName = "SeeSharper method";
             IsBold = false;
         }
     }
@@ -46,7 +45,7 @@ namespace SeeSharper.SyntaxColoring.Tags
         public StaticClassFormatDefinition()
         {
             DisplayName = "SeeSharper Static class";
-            ForegroundColor = Colors.DarkMagenta;
+            ForegroundColor = Color.FromArgb(255, 0x9b, 0, 0x9b);
         }
     }
 
@@ -88,7 +87,7 @@ namespace SeeSharper.SyntaxColoring.Tags
         public ConstantFormatDefinition()
         {
             DisplayName = "SeeSharper Constant";
-            ForegroundColor = Color.FromRgb(255, 255, 0);
+            ForegroundColor = Colors.Yellow;
         }
     }
 
@@ -116,7 +115,7 @@ namespace SeeSharper.SyntaxColoring.Tags
         public DimFormatDefinition()
         {
             DisplayName = "SeeSharper Dim";
-            ForegroundColor = Colors.DimGray.WithAlpha(100);
+            ForegroundOpacity = 0.3;
         }
     }
 
@@ -130,7 +129,7 @@ namespace SeeSharper.SyntaxColoring.Tags
         public HighlightFormatDefinition()
         {
             DisplayName = "SeeSharper Highlight";
-            BackgroundColor = Colors.Yellow.WithAlpha(100);
+            ForegroundColor = Colors.Yellow.WithAlpha(100);
         }
     }
 }

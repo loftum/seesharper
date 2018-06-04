@@ -13,14 +13,14 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0">Dim</Label>
+        <Label Grid.Row="0">Dim (Regex, one pattern per line)</Label>
         <TextBox Grid.Row="1" Name="DimPatterns"
                  AcceptsReturn="true"
                  AcceptsTab="true"
                  HorizontalScrollBarVisibility="Auto"
                  VerticalScrollBarVisibility="Auto"
                  />
-        <Label Grid.Row="2">Highlight</Label>
+        <Label Grid.Row="2">Highlight  (Regex, one pattern per line)</Label>
         <TextBox Grid.Row="3" Name="HighlightPatterns"
                  AcceptsReturn="true"
                  AcceptsTab="true"

@@ -24,6 +24,9 @@ namespace TestSolution
 
         public Program()
         {
+            5.GetString();
+
+
             Hest123();
             
             NotHest();
