@@ -13,12 +13,36 @@ namespace SeeSharper.Options
     {
         private static readonly string CollectionName = typeof(OccurrenceTaggingOptions).FullName;
         private readonly WritableSettingsStore _store;
-        private string _dimPatternsString;
-        private string _highlightPatternsString;
+        private string _dimPatternsString = "";
+        private string _emphasizePatternsString = "";
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public string[] DimPatterns => DimPatternsString?.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
-        public string[] HighlightPatterns => HighlightPatternsString?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+
+        private bool _semanticColoringEnabled = true;
+
+        public bool SemanticColoringEnabled
+        {
+            get => _semanticColoringEnabled;
+            set
+            {
+                _semanticColoringEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _occurrenceTaggingEnabled = true;
+
+        public bool OccurrenceTaggingEnabled
+        {
+            get => _occurrenceTaggingEnabled;
+            set
+            {
+                _occurrenceTaggingEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string[] DimPatterns { get; private set; } = new string[0];
 
         public string DimPatternsString
         {
@@ -26,19 +50,27 @@ namespace SeeSharper.Options
             set
             {
                 _dimPatternsString = value;
+                DimPatterns = value?.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries) ??
+                              new string[0];
                 OnPropertyChanged();
             }
         }
 
-        public string HighlightPatternsString
+        public string[] EmphasizePatterns { get; private set; } = new string[0];
+
+        public string EmphasizePatternsString
         {
-            get => _highlightPatternsString;
+            get => _emphasizePatternsString;
             set
             {
-                _highlightPatternsString = value;
+                _emphasizePatternsString = value;
+                EmphasizePatterns = value?.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries) ??
+                                    new string[0];
                 OnPropertyChanged();
             }
         }
+
+        private static string[] Split(string value) => value?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
 
         [ImportingConstructor]
         public OccurrenceTaggingOptions(SVsServiceProvider serviceProvider)
@@ -81,7 +113,7 @@ namespace SeeSharper.Options
             _store.SetValue(CollectionName, property.Name, property.GetValue(this));
         }
 
-        private void OnPropertyChanged([CallerMemberName]string property = null)
+        private void OnPropertyChanged([CallerMemberName] string property = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }

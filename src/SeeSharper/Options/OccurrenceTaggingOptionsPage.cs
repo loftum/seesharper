@@ -17,16 +17,20 @@ namespace SeeSharper.Options
         protected override void OnActivate(CancelEventArgs e)
         {
             LoadSettingsFromStorage();
+            Control.SemanticColoringBox.IsChecked = Options.SemanticColoringEnabled;
+            Control.OccurrenceTaggingBox.IsChecked = Options.OccurrenceTaggingEnabled;
             Control.DimPatterns.Text = Options.DimPatternsString;
-            Control.HighlightPatterns.Text = Options.HighlightPatternsString;
+            Control.HighlightPatterns.Text = Options.EmphasizePatternsString;
             base.OnActivate(e);
         }
 
         protected override void OnApply(PageApplyEventArgs e)
         {
             base.OnApply(e);
+            Options.SemanticColoringEnabled = Control.SemanticColoringBox.IsChecked.GetValueOrDefault();
+            Options.OccurrenceTaggingEnabled = Control.OccurrenceTaggingBox.IsChecked.GetValueOrDefault();
             Options.DimPatternsString = Control.DimPatterns.Text;
-            Options.HighlightPatternsString = Control.HighlightPatterns.Text;
+            Options.EmphasizePatternsString = Control.HighlightPatterns.Text;
             SaveSettingsToStorage();
         }
 

@@ -57,6 +57,11 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 
         private void OnOptionsChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (!_options.OccurrenceTaggingEnabled)
+            {
+                _highlightSpans = NormalizedSnapshotSpanCollection.Empty;
+                _dimSpans = NormalizedSnapshotSpanCollection.Empty;
+            }
             Update(_sourceBuffer.CurrentSnapshot);
         }
 
@@ -78,8 +83,12 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 
         private void Update(ITextSnapshot snapshot)
         {
+            if (!_options.OccurrenceTaggingEnabled)
+            {
+                return;
+            }
             var dimSpans = Find(_options.DimPatterns, snapshot);
-            var highlightSpans = Find(_options.HighlightPatterns, snapshot);
+            var highlightSpans = Find(_options.EmphasizePatterns, snapshot);
             lock (_updateLock)
             {
                 _dimSpans = dimSpans;
@@ -104,12 +113,10 @@ namespace SeeSharper.SyntaxColoring.OccurrenceTagging
 
         private IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans, NormalizedSnapshotSpanCollection wordSpans, string classificationType)
         {
-            if (wordSpans == null)
-            {
-                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
-            }
-
-            if (spans.Count == 0 || wordSpans.Count == 0)
+            if (!_options.OccurrenceTaggingEnabled ||
+                wordSpans == null ||
+                wordSpans.Count == 0 ||
+                spans.Count == 0)
             {
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
@@ -7,6 +8,7 @@ using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
+using SeeSharper.Options;
 using SeeSharper.SyntaxColoring.Tags;
 
 namespace SeeSharper.SyntaxColoring.Semantic
@@ -16,12 +18,14 @@ namespace SeeSharper.SyntaxColoring.Semantic
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private readonly ITextBuffer _buffer;
+        private readonly IOccurrenceTaggingOptions _options;
         private readonly IDictionary<string, IClassificationType> _clasificationTypes = new Dictionary<string, IClassificationType>();
         private Thingy _thingy;
 
-        public SemanticColorTagger(ITextBuffer buffer, IClassificationTypeRegistryService registry)
+        public SemanticColorTagger(ITextBuffer buffer, IClassificationTypeRegistryService registry, IOccurrenceTaggingOptions options)
         {
             _buffer = buffer;
+            _options = options;
 
             foreach(string key in typeof(TagTypes).GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => f.FieldType == typeof(string)).Select(f => f.GetValue(null)))
             {
@@ -31,21 +35,39 @@ namespace SeeSharper.SyntaxColoring.Semantic
             _clasificationTypes[ClassificationTypeNames.EnumName] = registry.GetClassificationType(ClassificationTypeNames.EnumName);
             _clasificationTypes[ClassificationTypeNames.StructName] = registry.GetClassificationType(ClassificationTypeNames.StructName);
             _clasificationTypes[ClassificationTypeNames.InterfaceName] = registry.GetClassificationType(ClassificationTypeNames.InterfaceName);
+            _options.PropertyChanged += OnOptionsChanged;
+        }
+
+        ~SemanticColorTagger()
+        {
+            _options.PropertyChanged -= OnOptionsChanged;
+        }
+
+        private void OnOptionsChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (!_options.SemanticColoringEnabled)
+            {
+                _thingy = null;
+            }
+            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(_buffer.CurrentSnapshot, 0, _buffer.CurrentSnapshot.Length)));
         }
 
         public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans.Count == 0)
+            if (!_options.SemanticColoringEnabled || spans.Count == 0)
             {
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
             }
-            if (_thingy == null || _thingy.Snapshot != spans[0].Snapshot)
+
+            var thingy = _thingy;
+            if (thingy == null || thingy.Snapshot != spans[0].Snapshot)
             {
                 try
                 {
                     var task = Thingy.Get(_buffer, spans[0].Snapshot);
                     task.Wait();
-                    _thingy = task.Result;
+                    thingy = task.Result;
+                    _thingy = thingy;
                 }
                 catch
                 {
@@ -53,11 +75,11 @@ namespace SeeSharper.SyntaxColoring.Semantic
                 }
             }
             
-            if (_thingy == null)
+            if (thingy == null)
             {
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
             }
-            return _thingy.GetClassifiedSpans(spans).Select(GetTagSpan).Where(s => s!= null);
+            return thingy.GetClassifiedSpans(spans).Select(GetTagSpan).Where(s => s!= null);
             
         }
 

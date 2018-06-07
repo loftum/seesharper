@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using SeeSharper.Options;
 
 namespace SeeSharper.SyntaxColoring.Semantic
 {
@@ -13,10 +14,12 @@ namespace SeeSharper.SyntaxColoring.Semantic
     {
         [Import]
         internal IClassificationTypeRegistryService ClassificationRegistry { get; set; }
+        [Import]
+        internal IOccurrenceTaggingOptions Options { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            return (ITagger<T>) new SemanticColorTagger(buffer, ClassificationRegistry);
+            return (ITagger<T>) new SemanticColorTagger(buffer, ClassificationRegistry, Options);
         }
     }
 }

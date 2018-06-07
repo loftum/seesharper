@@ -6,9 +6,11 @@ namespace SeeSharper.Options
     {
         event PropertyChangedEventHandler PropertyChanged;
         string[] DimPatterns { get; }
-        string[] HighlightPatterns { get; }
+        string[] EmphasizePatterns { get; }
         string DimPatternsString { get; set; }
-        string HighlightPatternsString { get; set; }
+        string EmphasizePatternsString { get; set; }
+        bool SemanticColoringEnabled { get; set; }
+        bool OccurrenceTaggingEnabled { get; set; }
         void Load();
         void Save();
     }

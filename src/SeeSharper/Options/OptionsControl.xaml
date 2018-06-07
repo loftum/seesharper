@@ -10,22 +10,32 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0">Dim (Regex, one pattern per line)</Label>
-        <TextBox Grid.Row="1" Name="DimPatterns"
-                 AcceptsReturn="true"
-                 AcceptsTab="true"
-                 HorizontalScrollBarVisibility="Auto"
-                 VerticalScrollBarVisibility="Auto"
-                 />
-        <Label Grid.Row="2">Highlight  (Regex, one pattern per line)</Label>
-        <TextBox Grid.Row="3" Name="HighlightPatterns"
-                 AcceptsReturn="true"
-                 AcceptsTab="true"
-                 HorizontalScrollBarVisibility="Auto"
-                 VerticalScrollBarVisibility="Auto"
-        />
+        <StackPanel Grid.Row="0">
+            <CheckBox Name="SemanticColoringBox" Content="Enable semantic coloring"/>
+            <CheckBox Name="OccurrenceTaggingBox" Content="Enable occurrence tagging"/>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0">Dim (Regex, one pattern per line)</Label>
+            <TextBox Grid.Row="1" Name="DimPatterns"
+                     AcceptsReturn="true"
+                     AcceptsTab="true"
+                     HorizontalScrollBarVisibility="Auto"
+                     VerticalScrollBarVisibility="Auto"
+            />
+            <Label Grid.Row="2">Highlight  (Regex, one pattern per line)</Label>
+            <TextBox Grid.Row="3" Name="HighlightPatterns"
+                     AcceptsReturn="true"
+                     AcceptsTab="true"
+                     HorizontalScrollBarVisibility="Auto"
+                     VerticalScrollBarVisibility="Auto"
+            />
+        </Grid>
     </Grid>
 </UserControl>
