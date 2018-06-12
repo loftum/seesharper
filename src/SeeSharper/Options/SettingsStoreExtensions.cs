@@ -1,25 +1,21 @@
-﻿using Microsoft.VisualStudio.Settings;
+﻿using System;
+using System.ComponentModel;
+using Microsoft.VisualStudio.Settings;
 
 namespace SeeSharper.Options
 {
     public static class SettingsStoreExtensions
     {
-        public static object GetValue(this WritableSettingsStore store, string collectionPath, string propertyName)
+        public static object GetValue(this WritableSettingsStore store, string collectionPath, PropertyDescriptor property)
         {
-            if (store.PropertyExists(collectionPath, propertyName))
+            if (store.PropertyExists(collectionPath, property.Name))
             {
-                switch (store.GetPropertyType(collectionPath, propertyName))
+                switch (property.PropertyType)
                 {
-                    case SettingsType.Int32: return store.GetInt32(collectionPath, propertyName);
-                    case SettingsType.Int64: return store.GetInt64(collectionPath, propertyName);
-                    case SettingsType.String: return store.GetString(collectionPath, propertyName);
-                    case SettingsType.Binary:
-                        using (var stream = store.GetMemoryStream(collectionPath, propertyName))
-                        {
-                            var buffer = new byte[stream.Length];
-                            stream.Read(buffer, 0, buffer.Length);
-                            return buffer;
-                        }
+                    case Type t when t == typeof(string): return store.GetString(collectionPath, property.Name);
+                    case Type t when t == typeof(int): return store.GetInt32(collectionPath, property.Name);
+                    case Type t when t == typeof(long): return store.GetInt64(collectionPath, property.Name);
+                    case Type t when t == typeof(bool): return store.GetBoolean(collectionPath, property.Name);
                 }
             }
             return null;
@@ -36,6 +32,8 @@ namespace SeeSharper.Options
                 case long l: store.SetInt64(collectionPath, propertyName, l);
                     break;
                 case int i: store.SetInt32(collectionPath, propertyName, i);
+                    break;
+                case bool b: store.SetBoolean(collectionPath, propertyName, b);
                     break;
             }
         }

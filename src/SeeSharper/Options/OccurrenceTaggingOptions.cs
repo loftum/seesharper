@@ -96,7 +96,7 @@ namespace SeeSharper.Options
         {
             if (_store.PropertyExists(CollectionName, property.Name))
             {
-                property.SetValue(this, _store.GetValue(CollectionName, property.Name));
+                property.SetValue(this, _store.GetValue(CollectionName, property));
             }
         }
 
