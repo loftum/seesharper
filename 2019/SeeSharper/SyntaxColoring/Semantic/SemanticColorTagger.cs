@@ -5,6 +5,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -78,8 +81,8 @@ namespace SeeSharper.SyntaxColoring.Semantic
             {
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
             }
+
             return thingy.GetClassifiedSpans(spans).Select(GetTagSpan).Where(s => s!= null);
-            
         }
 
         private ITagSpan<IClassificationTag> GetTagSpan(ClassifiedSpan span)
@@ -106,6 +109,10 @@ namespace SeeSharper.SyntaxColoring.Semantic
                                     case ClassificationTypeNames.Identifier:
                                         return span.TextSpan.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethod]);
                                     default:
+                                        if (meta.Node is MethodDeclarationSyntax declaration) // Stupid Classifier.
+                                        {
+                                            return declaration.Identifier.Span.ToTagSpan(_thingy.Snapshot, _clasificationTypes[TagTypes.ExtensionMethod]);
+                                        }
                                         return null;
                                 }
                             }

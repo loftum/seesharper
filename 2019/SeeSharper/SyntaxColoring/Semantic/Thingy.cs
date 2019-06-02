@@ -12,21 +12,24 @@ namespace SeeSharper.SyntaxColoring.Semantic
     {
         public SyntaxToken Token { get; }
         public SyntaxNode Node { get; }
+        public TextSpan TextSpan { get; }
         public ISymbol Symbol { get; }
         public bool HasSymbol => Symbol != null;
 
-        public SpanMeta(SyntaxNode node, ISymbol symbol)
+        public SpanMeta(SyntaxNode node, ISymbol symbol, TextSpan textSpan)
         {
             Node = node;
             Symbol = symbol;
             Token = default(SyntaxToken);
+            TextSpan = textSpan;
         }
 
-        public SpanMeta(SyntaxToken token)
+        public SpanMeta(SyntaxToken token, TextSpan textSpan)
         {
             Node = null;
             Symbol = null;
             Token = token;
+            TextSpan = textSpan;
         }
 
         public override string ToString()
@@ -52,16 +55,16 @@ namespace SeeSharper.SyntaxColoring.Semantic
 
         public SpanMeta GetMeta(TextSpan span)
         {
-            var node = SyntaxRoot.FindNode(span, getInnermostNodeForTie: true)?.GetExpression();
+            var node = SyntaxRoot.FindNode(span)?.GetExpression();
             if (node != null)
             {
                 var symbol = SemanticModel.GetSymbolInfo(node).Symbol ??
                     SemanticModel.GetDeclaredSymbol(node) ??
                     SemanticModel.GetTypeInfo(node).Type;
-                return new SpanMeta(node, symbol);
+                return new SpanMeta(node, symbol, span);
             }
             var child = SyntaxRoot.ChildThatContainsPosition(span.Start);
-            return new SpanMeta(child.AsToken());
+            return new SpanMeta(child.AsToken(), span);
         }
 
         private Thingy() { }

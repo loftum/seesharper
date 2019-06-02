@@ -11,7 +11,7 @@ namespace SeeSharper.SyntaxColoring.Tags
     [ClassificationType(ClassificationTypeNames = TagTypes.ExtensionMethod)]
     [Name(TagTypes.ExtensionMethod)]
     [UserVisible(true)]
-    [Order(After = ClassificationTypeNames.MethodName)]
+    [Order(After = TagTypes.Method)]
     internal class ExtensionMethodFormatDefinition : ClassificationFormatDefinition
     {
         public ExtensionMethodFormatDefinition()
