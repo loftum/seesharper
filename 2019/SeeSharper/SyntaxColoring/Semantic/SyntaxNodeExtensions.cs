@@ -8,13 +8,12 @@ namespace SeeSharper.SyntaxColoring.Semantic
     {
         public static SyntaxNode GetExpression(this SyntaxNode node)
         {
-            if (node.Kind() == SyntaxKind.Argument)
+            switch (node.Kind())
             {
-                return ((ArgumentSyntax)node).Expression;
-            }
-            if (node.Kind() == SyntaxKind.AttributeArgument)
-            {
-                return ((AttributeArgumentSyntax)node).Expression;
+                case SyntaxKind.Argument:
+                    return ((ArgumentSyntax)node).Expression;
+                case SyntaxKind.AttributeArgument:
+                    return ((AttributeArgumentSyntax)node).Expression;
             }
             return node;
         }

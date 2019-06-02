@@ -17,34 +17,35 @@ namespace TestSolution
         }
     }
 
+    class Hest
+    {
+        public event EventHandler OnKnegg;
+
+        public Hest()
+        {
+
+        }
+
+        public void Knegg()
+        {
+            
+        }
+    }
+
     class Program
     {
         public EventHandler Event;
+
         public string Property { get; set;}
 
         public Program()
         {
-            5.GetString();
-
-            
-            Hest123();
-            
-            NotHest();
-
-
-            Hest123(); // p
-        }
-        
-        static void Pølse()
-        {
-
+            var hest = new Hest();
+            hest.OnKnegg += HarKnegga;
+            var a = 5.GetString();
         }
 
-        static void NotHest()
-        {
-        }
-
-        static void Hest123()
+        private static void HarKnegga(object sender, EventArgs e)
         {
 
         }
@@ -59,6 +60,7 @@ namespace TestSolution
     {
         static Extensions()
         {
+            var a = 1;
         }
 
         public static string GetString(this int value)

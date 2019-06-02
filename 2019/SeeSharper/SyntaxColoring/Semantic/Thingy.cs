@@ -31,7 +31,7 @@ namespace SeeSharper.SyntaxColoring.Semantic
 
         public override string ToString()
         {
-            return Node != null ? $"{Node.Span}: {Node}" : $"{Token.Span}: {Token}";
+            return Node != null ? $"{Node.Span}: '{Node}'" : $"{Token.Span}: '{Token}'";
         }
     }
 
@@ -52,7 +52,7 @@ namespace SeeSharper.SyntaxColoring.Semantic
 
         public SpanMeta GetMeta(TextSpan span)
         {
-            var node = SyntaxRoot.FindNode(span)?.GetExpression();
+            var node = SyntaxRoot.FindNode(span, getInnermostNodeForTie: true)?.GetExpression();
             if (node != null)
             {
                 var symbol = SemanticModel.GetSymbolInfo(node).Symbol ??

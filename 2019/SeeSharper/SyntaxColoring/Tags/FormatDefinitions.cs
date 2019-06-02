@@ -8,10 +8,10 @@ using SeeSharper.SyntaxColoring.OccurrenceTagging;
 namespace SeeSharper.SyntaxColoring.Tags
 {
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = TagTypes.ExtensionMethd)]
-    [Name(TagTypes.ExtensionMethd)]
+    [ClassificationType(ClassificationTypeNames = TagTypes.ExtensionMethod)]
+    [Name(TagTypes.ExtensionMethod)]
     [UserVisible(true)]
-    [Order(After = ClassificationTypeNames.Identifier)]
+    [Order(After = ClassificationTypeNames.MethodName)]
     internal class ExtensionMethodFormatDefinition : ClassificationFormatDefinition
     {
         public ExtensionMethodFormatDefinition()
@@ -25,7 +25,7 @@ namespace SeeSharper.SyntaxColoring.Tags
     [ClassificationType(ClassificationTypeNames = TagTypes.Method)]
     [Name(TagTypes.Method)]
     [UserVisible(true)]
-    [Order(After = ClassificationTypeNames.Identifier)]
+    [Order(After = ClassificationTypeNames.MethodName)]
     internal class MethodFormatDefinition : ClassificationFormatDefinition
     {
         public MethodFormatDefinition()

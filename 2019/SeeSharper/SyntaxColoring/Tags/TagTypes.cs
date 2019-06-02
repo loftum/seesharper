@@ -2,7 +2,7 @@
 {
     internal static class TagTypes
     {
-        public const string ExtensionMethd = "SeeSharper/ExtensionMethod";
+        public const string ExtensionMethod = "SeeSharper/ExtensionMethod";
         public const string StaticClass = "SeeSharper/StaticClass";
         public const string Property = "SeeSharper/Property";
         public const string Field = "SeeSharper/Field";
